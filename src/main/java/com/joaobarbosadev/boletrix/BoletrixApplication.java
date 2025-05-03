@@ -1,4 +1,4 @@
-package com.joaobarbosade.boletrix;
+package com.joaobarbosadev.boletrix;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

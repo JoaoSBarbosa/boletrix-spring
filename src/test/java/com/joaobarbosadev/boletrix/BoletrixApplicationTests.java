@@ -1,4 +1,4 @@
-package com.joaobarbosade.boletrix;
+package com.joaobarbosadev.boletrix;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
