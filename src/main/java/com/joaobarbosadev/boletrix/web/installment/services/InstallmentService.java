@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public interface InstallmentService {
 
     InstallmentResponse insert(InstallmentInsert installmentInsert);
-    InstallmentResponse update(InstallmentRequest request);
+    InstallmentResponse update(InstallmentRequest request, Long id);
     void deleteById(Long id);
     String generateInstallment(BigDecimal amount, LocalDate initialDate);
     Page<InstallmentResponse> list(
