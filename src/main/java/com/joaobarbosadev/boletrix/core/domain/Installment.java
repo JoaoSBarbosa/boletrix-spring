@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -23,9 +24,12 @@ public class Installment {
     private BigDecimal amount;
     @Column(name = "data_pagamento")
     private LocalDateTime paymentDate;
-    @Column(name = "reciboUrl")
+
+    @Column(name = "data_parcela")
+    private LocalDate installmentDate;
+    @Column(name = "recibo_url")
     private String receiptUrl;
-    @Column(name = "caminhoRecibo")
+    @Column(name = "caminho_recibo")
     private String receiptPath;
     @Column(name = "numero_parcela")
     private Integer installmentNumber;

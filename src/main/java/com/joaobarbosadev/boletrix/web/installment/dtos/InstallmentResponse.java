@@ -7,15 +7,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
-public class InstallmentResponse {
-    private Long id;
+    @AllArgsConstructor
+    public class InstallmentResponse {
+        private Long id;
     private BigDecimal amount;
+    private LocalDate installmentDate;
     private LocalDateTime paymentDate;
     private String receiptUrl;
     private String receiptPath;
