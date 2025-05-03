@@ -1,0 +1,21 @@
+# Ignorar arquivos sensíveis e específicos do Spring Boot
+src/main/resources/application.yml
+src/main/resources/application-*.yml
+
+# Ignorar arquivos de build
+/target/
+*.class
+
+# Ignorar arquivos do IntelliJ IDEA
+.idea/
+*.iml
+
+# Ignorar arquivos de log
+*.log
+
+# Ignorar variáveis de ambiente
+.env
+
+# Ignorar diretórios do sistema
+.DS_Store
+Thumbs.db
