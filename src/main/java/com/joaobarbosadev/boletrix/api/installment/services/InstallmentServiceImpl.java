@@ -1,13 +1,13 @@
-package com.joaobarbosadev.boletrix.web.installment.services;
+package com.joaobarbosadev.boletrix.api.installment.services;
 
-import com.joaobarbosadev.boletrix.core.domain.Installment;
+import com.joaobarbosadev.boletrix.core.models.domain.Installment;
 import com.joaobarbosadev.boletrix.core.exception.customizations.CustomEmptyFieldException;
 import com.joaobarbosadev.boletrix.core.exception.customizations.CustomEntityNotFoundException;
 import com.joaobarbosadev.boletrix.core.repository.InstallmentRepository;
-import com.joaobarbosadev.boletrix.web.installment.dtos.InstallmentInsert;
-import com.joaobarbosadev.boletrix.web.installment.dtos.InstallmentRequest;
-import com.joaobarbosadev.boletrix.web.installment.dtos.InstallmentResponse;
-import com.joaobarbosadev.boletrix.web.installment.mappers.InstallmentMapper;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentInsert;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentRequest;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentResponse;
+import com.joaobarbosadev.boletrix.api.installment.mappers.InstallmentMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static com.joaobarbosadev.boletrix.web.installment.common.InstallmentValidations.validateInsert;
+import static com.joaobarbosadev.boletrix.api.installment.common.InstallmentValidations.validateInsert;
 
 @Service
 public class InstallmentServiceImpl implements InstallmentService {

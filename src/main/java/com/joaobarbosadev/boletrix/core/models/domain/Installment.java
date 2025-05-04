@@ -1,4 +1,4 @@
-package com.joaobarbosadev.boletrix.core.domain;
+package com.joaobarbosadev.boletrix.core.models.domain;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;

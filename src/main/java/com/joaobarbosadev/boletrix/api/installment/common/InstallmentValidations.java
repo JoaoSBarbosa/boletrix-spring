@@ -1,7 +1,7 @@
-package com.joaobarbosadev.boletrix.web.installment.common;
+package com.joaobarbosadev.boletrix.api.installment.common;
 
 import com.joaobarbosadev.boletrix.core.exception.customizations.CustomEmptyFieldException;
-import com.joaobarbosadev.boletrix.web.installment.dtos.InstallmentInsert;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentInsert;
 
 import java.math.BigDecimal;
 

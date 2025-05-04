@@ -1,11 +1,9 @@
-package com.joaobarbosadev.boletrix.web.installment.services;
+package com.joaobarbosadev.boletrix.api.installment.services;
 
-import com.joaobarbosadev.boletrix.core.domain.Installment;
-import com.joaobarbosadev.boletrix.web.installment.dtos.InstallmentInsert;
-import com.joaobarbosadev.boletrix.web.installment.dtos.InstallmentRequest;
-import com.joaobarbosadev.boletrix.web.installment.dtos.InstallmentResponse;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentInsert;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentRequest;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentResponse;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

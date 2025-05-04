@@ -1,8 +1,8 @@
-package com.joaobarbosadev.boletrix.web.installment.mappers;
+package com.joaobarbosadev.boletrix.api.installment.mappers;
 
-import com.joaobarbosadev.boletrix.core.domain.Installment;
-import com.joaobarbosadev.boletrix.web.installment.dtos.InstallmentRequest;
-import com.joaobarbosadev.boletrix.web.installment.dtos.InstallmentResponse;
+import com.joaobarbosadev.boletrix.core.models.domain.Installment;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentRequest;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentResponse;
 import org.springframework.stereotype.Component;
 
 @Component

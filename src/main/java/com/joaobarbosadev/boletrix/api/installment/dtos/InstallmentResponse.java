@@ -1,4 +1,4 @@
-package com.joaobarbosadev.boletrix.web.installment.dtos;
+package com.joaobarbosadev.boletrix.api.installment.dtos;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
