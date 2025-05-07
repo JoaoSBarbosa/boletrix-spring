@@ -1,6 +1,7 @@
 package com.joaobarbosadev.boletrix.core.service.token.providers.jjwt;
 
 import com.joaobarbosadev.boletrix.core.exception.customizations.TokenServiceException;
+import com.joaobarbosadev.boletrix.core.models.auth.UserDetailsImpl;
 import com.joaobarbosadev.boletrix.core.models.domain.Role;
 import com.joaobarbosadev.boletrix.core.models.domain.UserSystem;
 import com.joaobarbosadev.boletrix.core.service.token.interfaces.TokenService;
@@ -25,12 +26,12 @@ public class JjwtTokenService implements TokenService {
 
 
     @Override
-    public String generatedAccessToken(UserSystem user) {
+    public String generatedAccessToken(UserDetailsImpl user) {
         Map<String, Object> claims = generateClaims(user);
 
         return generateToken(
                 claims,
-                user.getEmail(),
+                user.getUserSystem().getEmail(),
                 configProperties.getAccessTokenExpirationInSeconds(),
                 configProperties.getAccessTokenSigningKey()
         );
@@ -42,8 +43,9 @@ public class JjwtTokenService implements TokenService {
     }
 
     @Override
-    public String generateRefreshToken(String subject) {
-        return generateToken(subject, configProperties.getRefreshTokenExpirationInSeconds(), configProperties.getRefreshTokenSigningKey());
+    public String generateRefreshToken(UserDetailsImpl user) {
+        Map<String, Object> claims = generateClaims(user);
+        return generateToken(claims, user.getUserSystem().getEmail(), configProperties.getRefreshTokenExpirationInSeconds(), configProperties.getRefreshTokenSigningKey());
     }
 
     @Override
@@ -87,8 +89,9 @@ public class JjwtTokenService implements TokenService {
                 .compact();
     }
 
-    private Map<String, Object> generateClaims(UserSystem user) {
+    private Map<String, Object> generateClaims(UserDetailsImpl userSystem) {
         Map<String, Object> claims = new HashMap<>();
+        UserSystem user = userSystem.getUserSystem();
         claims.put("name", user.getName());
         claims.put("email", user.getEmail());
         claims.put("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));

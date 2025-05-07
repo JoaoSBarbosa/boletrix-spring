@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "com.joaobarbosadev.boletrix.core.services.token.jjwt")
+@ConfigurationProperties(prefix = "com.joaobarbosadev.boletrix.core.service.token.jjwt")
 public class JjwtConfigProperties {
 
     private String accessTokenSigningKey;
@@ -26,5 +26,21 @@ public class JjwtConfigProperties {
 
     public Long getAccessTokenExpirationInSeconds() {
         return accessTokenExpirationInSeconds;
+    }
+
+    public void setAccessTokenSigningKey(String accessTokenSigningKey) {
+        this.accessTokenSigningKey = accessTokenSigningKey;
+    }
+
+    public void setRefreshTokenExpirationInSeconds(Long refreshTokenExpirationInSeconds) {
+        this.refreshTokenExpirationInSeconds = refreshTokenExpirationInSeconds;
+    }
+
+    public void setRefreshTokenSigningKey(String refreshTokenSigningKey) {
+        this.refreshTokenSigningKey = refreshTokenSigningKey;
+    }
+
+    public void setAccessTokenExpirationInSeconds(Long accessTokenExpirationInSeconds) {
+        this.accessTokenExpirationInSeconds = accessTokenExpirationInSeconds;
     }
 }
