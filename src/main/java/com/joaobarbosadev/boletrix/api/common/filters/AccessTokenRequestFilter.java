@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Date;
 
 import static com.joaobarbosadev.boletrix.core.utils.JwtBearerUtils.AUTHORIZATION_HEADER;
 import static com.joaobarbosadev.boletrix.core.utils.JwtBearerUtils.TOKEN_TYPE;
@@ -51,7 +52,7 @@ public class AccessTokenRequestFilter extends OncePerRequestFilter {
             body.setStatus(status.value());
             body.setMessage(e.getLocalizedMessage());
             body.setDetails( e.getClass().getSimpleName());
-            body.setTimestamp(Util.getFormattedInstance());
+            body.setTimestamp(Util.getFormattedInstance(new Date()));
             body.setError(status.getReasonPhrase());
 
             var json = objectMapper.writeValueAsString(body);

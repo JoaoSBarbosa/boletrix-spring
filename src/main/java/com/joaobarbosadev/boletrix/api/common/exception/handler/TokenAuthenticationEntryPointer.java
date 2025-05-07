@@ -13,6 +13,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Date;
 
 @Component
 public class TokenAuthenticationEntryPointer implements AuthenticationEntryPoint {
@@ -30,7 +31,7 @@ public class TokenAuthenticationEntryPointer implements AuthenticationEntryPoint
         bodyError.setStatus(status.value());
         bodyError.setTitle("Não foi possível autenticar o token");
         bodyError.setMessage(authException.getLocalizedMessage());
-        bodyError.setTimestamp(Util.getFormattedInstance());
+        bodyError.setTimestamp(Util.getFormattedInstance(new Date()));
         bodyError.setPath(request.getRequestURI());
         bodyError.setError(status.getReasonPhrase());
         bodyError.setDetails( authException.getClass().getSimpleName() );
