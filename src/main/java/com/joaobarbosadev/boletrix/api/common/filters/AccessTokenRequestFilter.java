@@ -35,23 +35,28 @@ public class AccessTokenRequestFilter extends OncePerRequestFilter {
         this.tokenService = tokenService;
         this.userDetailsService = userDetailsService;
     }
-
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        try {
+        String path = request.getRequestURI();
 
+        // ⚠️ Ignorar rotas públicas
+        if (path.startsWith("/login") || path.startsWith("/auth") || path.startsWith("/register")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        try {
             tryDolFilterINternal(request, response, filterChain);
         } catch (TokenServiceException e) {
-
             var status = HttpStatus.UNAUTHORIZED;
             CustomError body = new CustomError();
             body.setStatus(status.value());
             body.setMessage(e.getLocalizedMessage());
-            body.setDetails( e.getClass().getSimpleName());
+            body.setDetails(e.getClass().getSimpleName());
             body.setTimestamp(Util.getFormattedInstance(new Date()));
             body.setError(status.getReasonPhrase());
 
@@ -60,10 +65,37 @@ public class AccessTokenRequestFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(json);
-
         }
-
     }
+
+//    @Override
+//    protected void doFilterInternal(
+//            HttpServletRequest request,
+//            HttpServletResponse response,
+//            FilterChain filterChain) throws ServletException, IOException {
+//
+//        try {
+//
+//            tryDolFilterINternal(request, response, filterChain);
+//        } catch (TokenServiceException e) {
+//
+//            var status = HttpStatus.UNAUTHORIZED;
+//            CustomError body = new CustomError();
+//            body.setStatus(status.value());
+//            body.setMessage(e.getLocalizedMessage());
+//            body.setDetails( e.getClass().getSimpleName());
+//            body.setTimestamp(Util.getFormattedInstance(new Date()));
+//            body.setError(status.getReasonPhrase());
+//
+//            var json = objectMapper.writeValueAsString(body);
+//            response.setStatus(status.value());
+//            response.setContentType("application/json");
+//            response.setCharacterEncoding("UTF-8");
+//            response.getWriter().write(json);
+//
+//        }
+//
+//    }
 
 
     private void tryDolFilterINternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
