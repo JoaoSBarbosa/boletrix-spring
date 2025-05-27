@@ -68,41 +68,12 @@ public class AccessTokenRequestFilter extends OncePerRequestFilter {
         }
     }
 
-//    @Override
-//    protected void doFilterInternal(
-//            HttpServletRequest request,
-//            HttpServletResponse response,
-//            FilterChain filterChain) throws ServletException, IOException {
-//
-//        try {
-//
-//            tryDolFilterINternal(request, response, filterChain);
-//        } catch (TokenServiceException e) {
-//
-//            var status = HttpStatus.UNAUTHORIZED;
-//            CustomError body = new CustomError();
-//            body.setStatus(status.value());
-//            body.setMessage(e.getLocalizedMessage());
-//            body.setDetails( e.getClass().getSimpleName());
-//            body.setTimestamp(Util.getFormattedInstance(new Date()));
-//            body.setError(status.getReasonPhrase());
-//
-//            var json = objectMapper.writeValueAsString(body);
-//            response.setStatus(status.value());
-//            response.setContentType("application/json");
-//            response.setCharacterEncoding("UTF-8");
-//            response.getWriter().write(json);
-//
-//        }
-//
-//    }
-
 
     private void tryDolFilterINternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         var token = "";
         var email = "";
         var authentizationHeader = request.getHeader(AUTHORIZATION_HEADER);
-
+        System.out.println("Authorization header: " + authentizationHeader);
         if (isIsPresentToken(authentizationHeader)) {
             token = authentizationHeader.substring(TOKEN_TYPE.length());
             email = tokenService.getSubjectFromAccessToken(token);
@@ -119,6 +90,7 @@ public class AccessTokenRequestFilter extends OncePerRequestFilter {
     private void setAuthentication(HttpServletRequest request, String email) {
         var userDetails = userDetailsService.loadUserByUsername(email);
         var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        System.out.println("🚨 Authorities carregadas: " + userDetails.getAuthorities());
 
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);

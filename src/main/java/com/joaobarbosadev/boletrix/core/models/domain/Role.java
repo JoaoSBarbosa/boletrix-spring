@@ -20,7 +20,7 @@ public class Role implements GrantedAuthority {
     @Override
     @JsonIgnore
     public String getAuthority() {
-        return this.name;
+        return "ROLE_" + this.name.toUpperCase(); // ou normalize como preferir
     }
 
     public Role(){}
