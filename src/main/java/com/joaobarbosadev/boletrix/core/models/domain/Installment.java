@@ -1,5 +1,6 @@
 package com.joaobarbosadev.boletrix.core.models.domain;
 
+import com.joaobarbosadev.boletrix.core.enums.PaymentStatus;
 import com.joaobarbosadev.boletrix.core.models.abstracts.Auditable;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -28,11 +29,22 @@ public class Installment extends Auditable {
     private String receiptPath;
     @Column(name = "numero_parcela")
     private Integer installmentNumber;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
 
     public Installment() {
     }
 
-    public Installment(Long id, BigDecimal amount, LocalDateTime paymentDate, LocalDate installmentDate, String receiptUrl, String receiptPath, Integer installmentNumber) {
+    public Installment(
+            Long id,
+            BigDecimal amount,
+            LocalDateTime paymentDate,
+            LocalDate installmentDate,
+            String receiptUrl,
+            String receiptPath,
+            Integer installmentNumber,
+            PaymentStatus status
+    ) {
         this.id = id;
         this.amount = amount;
         this.paymentDate = paymentDate;
@@ -40,6 +52,7 @@ public class Installment extends Auditable {
         this.receiptUrl = receiptUrl;
         this.receiptPath = receiptPath;
         this.installmentNumber = installmentNumber;
+        this.status = status;
     }
 
     public Long getId() {
@@ -98,6 +111,14 @@ public class Installment extends Auditable {
         this.amount = amount;
     }
 
+    public PaymentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PaymentStatus status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -113,13 +134,14 @@ public class Installment extends Auditable {
     @Override
     public String toString() {
         return "Installment{" +
-                "id=" + id +
-                ", amount=" + amount +
-                ", paymentDate=" + paymentDate +
-                ", installmentDate=" + installmentDate +
-                ", receiptUrl='" + receiptUrl + '\'' +
-                ", receiptPath='" + receiptPath + '\'' +
-                ", installmentNumber=" + installmentNumber +
+                "ID=" + id +
+                ", Valor=" + amount +
+                ", Data de pagamento=" + paymentDate +
+                ", Data da parcela=" + installmentDate +
+                ", URL='" + receiptUrl + '\'' +
+                ", PATH='" + receiptPath + '\'' +
+                ", Nº da parcela=" + installmentNumber +
+                ", Status=" + status +
                 '}';
     }
 }

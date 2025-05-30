@@ -1,4 +1,6 @@
 package com.joaobarbosadev.boletrix.api.installment.dtos;
+import com.joaobarbosadev.boletrix.core.enums.PaymentStatus;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,10 +14,20 @@ public class InstallmentResponse {
     private String receiptUrl;
     private String receiptPath;
     private Integer installmentNumber;
+    private PaymentStatus status;
 
     public InstallmentResponse() {}
 
-    public InstallmentResponse(Long id, BigDecimal amount, LocalDate installmentDate, LocalDateTime paymentDate, String receiptUrl, String receiptPath, Integer installmentNumber) {
+    public InstallmentResponse(
+            Long id,
+            BigDecimal amount,
+            LocalDate installmentDate,
+            LocalDateTime paymentDate,
+            String receiptUrl,
+            String receiptPath,
+            Integer installmentNumber,
+            PaymentStatus status
+    ) {
         this.id = id;
         this.amount = amount;
         this.installmentDate = installmentDate;
@@ -23,6 +35,7 @@ public class InstallmentResponse {
         this.receiptUrl = receiptUrl;
         this.receiptPath = receiptPath;
         this.installmentNumber = installmentNumber;
+        this.status = status;
 
     }
 
@@ -80,5 +93,13 @@ public class InstallmentResponse {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public PaymentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PaymentStatus status) {
+        this.status = status;
     }
 }

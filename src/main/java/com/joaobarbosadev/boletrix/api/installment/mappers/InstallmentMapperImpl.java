@@ -39,6 +39,7 @@ public class InstallmentMapperImpl implements InstallmentMapper {
         response.setReceiptUrl(installment.getReceiptUrl());
         response.setReceiptPath(installment.getReceiptPath());
         response.setInstallmentNumber(installment.getInstallmentNumber());
+        response.setStatus(installment.getStatus());
         return response;
     }
 
@@ -52,6 +53,7 @@ public class InstallmentMapperImpl implements InstallmentMapper {
         entity.setReceiptUrl(response.getReceiptUrl());
         entity.setReceiptPath(response.getReceiptPath());
         entity.setInstallmentNumber(response.getInstallmentNumber());
+        entity.setStatus(response.getStatus());
         return entity;
     }
 }

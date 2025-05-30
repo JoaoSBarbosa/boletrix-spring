@@ -14,6 +14,7 @@ public interface InstallmentService {
     InstallmentResponse insert(InstallmentInsert installmentInsert);
     InstallmentResponse update(InstallmentRequest request, Long id);
     void deleteById(Long id);
+    void deleteAll();
     String generateInstallment(BigDecimal amount, BigDecimal monthlyAmount, LocalDate initialDate);
     Page<InstallmentResponse> list(
             Long id,

@@ -41,9 +41,18 @@ public class InstallmentController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteInstallment(@PathVariable Long id) {
+        System.out.println("CHEGOU NA API PARA DELETAR");
+        service.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/all")
+    public ResponseEntity<Void> deleteAllInstallments() {
+        service.deleteAll();
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/generated/{totalAmount}/{monthlyAmount}")
     public ResponseEntity<String> generateInstallment(
             @PathVariable BigDecimal totalAmount,

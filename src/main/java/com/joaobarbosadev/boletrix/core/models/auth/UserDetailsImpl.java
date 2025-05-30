@@ -2,9 +2,11 @@ package com.joaobarbosadev.boletrix.core.models.auth;
 
 import com.joaobarbosadev.boletrix.core.models.domain.UserSystem;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 
 public class UserDetailsImpl implements UserDetails {
@@ -17,8 +19,23 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return userSystem.getRoles();
+        return userSystem.getRoles().stream()
+                .map(role -> {
+                    String roleName = role.getName();
+                    // Evita duplicar ROLE_
+                    if (!roleName.startsWith("ROLE_")) {
+                        roleName = "ROLE_" + roleName;
+                    }
+                    return new SimpleGrantedAuthority(roleName);
+                })
+                .collect(Collectors.toList());
     }
+
+
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return userSystem.getRoles();
+//    }
 
     @Override
     public String getPassword() {
