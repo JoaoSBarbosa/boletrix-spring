@@ -15,6 +15,7 @@ public class InstallmentMapperImpl implements InstallmentMapper {
         installment.setPaymentDate( request.getPaymentDate());
         installment.setReceiptUrl(request.getReceiptUrl());
         installment.setReceiptPath(request.getReceiptPath());
+        installment.setStatus(request.getStatus());
         return installment;
     }
 
@@ -26,6 +27,7 @@ public class InstallmentMapperImpl implements InstallmentMapper {
         request.setReceiptUrl(installment.getReceiptUrl());
         request.setReceiptPath(installment.getReceiptPath());
         request.setInstallmentNumber(installment.getInstallmentNumber());
+        request.setStatus(installment.getStatus());
         return request;
     }
 
@@ -36,6 +38,7 @@ public class InstallmentMapperImpl implements InstallmentMapper {
         response.setAmount(installment.getAmount());
         response.setInstallmentDate(installment.getInstallmentDate());
         response.setPaymentDate(installment.getPaymentDate());
+        response.setPaymentTime(installment.getPaymentTime());
         response.setReceiptUrl(installment.getReceiptUrl());
         response.setReceiptPath(installment.getReceiptPath());
         response.setInstallmentNumber(installment.getInstallmentNumber());

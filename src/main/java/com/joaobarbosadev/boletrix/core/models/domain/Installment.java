@@ -18,8 +18,12 @@ public class Installment extends Auditable {
     private Long id;
     @Column(name = "valor")
     private BigDecimal amount;
+
     @Column(name = "data_pagamento")
-    private LocalDateTime paymentDate;
+    private LocalDate paymentDate;
+
+    @Column(name = "hora_pagamento")
+    private String paymentTime;
 
     @Column(name = "data_parcela")
     private LocalDate installmentDate;
@@ -38,12 +42,13 @@ public class Installment extends Auditable {
     public Installment(
             Long id,
             BigDecimal amount,
-            LocalDateTime paymentDate,
+            LocalDate paymentDate,
             LocalDate installmentDate,
             String receiptUrl,
             String receiptPath,
             Integer installmentNumber,
-            PaymentStatus status
+            PaymentStatus status,
+            String paymentTime
     ) {
         this.id = id;
         this.amount = amount;
@@ -53,6 +58,7 @@ public class Installment extends Auditable {
         this.receiptPath = receiptPath;
         this.installmentNumber = installmentNumber;
         this.status = status;
+        this.paymentTime = paymentTime;
     }
 
     public Long getId() {
@@ -95,12 +101,20 @@ public class Installment extends Auditable {
         this.installmentDate = installmentDate;
     }
 
-    public LocalDateTime getPaymentDate() {
+    public LocalDate getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(LocalDateTime paymentDate) {
+    public void setPaymentDate(LocalDate paymentDate) {
         this.paymentDate = paymentDate;
+    }
+
+    public String getPaymentTime() {
+        return paymentTime;
+    }
+
+    public void setPaymentTime(String paymentTime) {
+        this.paymentTime = paymentTime;
     }
 
     public BigDecimal getAmount() {
@@ -131,17 +145,18 @@ public class Installment extends Auditable {
         return Objects.hashCode(id);
     }
 
+
+
     @Override
     public String toString() {
-        return "Installment{" +
-                "ID=" + id +
-                ", Valor=" + amount +
-                ", Data de pagamento=" + paymentDate +
-                ", Data da parcela=" + installmentDate +
-                ", URL='" + receiptUrl + '\'' +
-                ", PATH='" + receiptPath + '\'' +
-                ", Nº da parcela=" + installmentNumber +
-                ", Status=" + status +
-                '}';
+        return "📄 Detalhes da Parcela(Entidade):\n" +
+                "  • ID: " + id + "\n" +
+                "  • Valor: " + amount + "\n" +
+                "  • Data de Pagamento: " + paymentDate + "\n" +
+                "  • Hora de Pagamento: '" + paymentTime + "'\n" +
+                "  • URL do Comprovante: '" + receiptUrl + "'\n" +
+                "  • Caminho do Comprovante: '" + receiptPath + "'\n" +
+                "  • Número da Parcela: " + installmentNumber + "\n" +
+                "  • Status: " + status + "\n";
     }
 }

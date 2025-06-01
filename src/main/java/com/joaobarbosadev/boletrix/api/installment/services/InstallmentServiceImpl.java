@@ -1,5 +1,7 @@
 package com.joaobarbosadev.boletrix.api.installment.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joaobarbosadev.boletrix.core.enums.PaymentStatus;
 import com.joaobarbosadev.boletrix.core.models.domain.Installment;
 import com.joaobarbosadev.boletrix.core.exception.customizations.CustomEmptyFieldException;
 import com.joaobarbosadev.boletrix.core.exception.customizations.CustomEntityNotFoundException;
@@ -21,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.joaobarbosadev.boletrix.api.installment.common.InstallmentValidations.validateInsert;
 
@@ -46,12 +49,18 @@ public class InstallmentServiceImpl implements InstallmentService {
 
     @Override
     public InstallmentResponse update(InstallmentRequest request, Long id) {
+
+
         if (id == null) {
             throw new CustomEmptyFieldException("O ID é obrigatorio para edição de registro");
         }
-        Installment actual = installmentRepository.findById(id).orElseThrow(() -> new CustomEntityNotFoundException("Não foi encontrado um registro com o ID: " + id));
 
+        Installment actual = installmentRepository.findById(id).orElseThrow(() -> new CustomEntityNotFoundException("Não foi encontrado um registro com o ID: " + id));
         buildUpdate(request, actual);
+
+
+        System.out.println("DADO REGISTRADO: " + actual);
+
         actual = installmentRepository.save(actual);
         return mapper.toInstallmentResponse(actual);
     }
@@ -76,6 +85,7 @@ public class InstallmentServiceImpl implements InstallmentService {
             throw new CustomEntityNotFoundException(e.getMessage());
         }
     }
+
     @Override
     public String generateInstallment(BigDecimal totalAmount, BigDecimal monthlyAmount, LocalDate initialDate) {
         List<Installment> installments = new ArrayList<>();
@@ -104,6 +114,7 @@ public class InstallmentServiceImpl implements InstallmentService {
             installment.setPaymentDate(null);
             installment.setReceiptPath(null);
             installment.setReceiptUrl(null);
+            installment.setStatus(PaymentStatus.PENDING);
             installment.setInstallmentNumber(installmentNumber);
 
             installments.add(installment);
@@ -118,49 +129,14 @@ public class InstallmentServiceImpl implements InstallmentService {
         return "Parcelamento gerado com sucesso: " + installments.size() + " parcelas";
     }
 
-//    @Override
-//    public String generateInstallment(BigDecimal totalAmount, BigDecimal monthlyAmount, LocalDate initialDate) {
-//        List<Installment> installments = new ArrayList<>();
-//        BigDecimal remaining = totalAmount;
-//        int installmentNumber = 1;
-//        LocalDate installmentDate = initialDate;
-//
-//        while (remaining.compareTo(BigDecimal.ZERO) > 0) {
-//            BigDecimal currentAmount;
-//
-//            if (remaining.compareTo(monthlyAmount) > 0) {
-//                currentAmount = monthlyAmount;
-//            } else {
-//                currentAmount = remaining;
-//            }
-//
-//            Installment installment = new Installment();
-//            installment.setAmount(currentAmount);
-//            installment.setInstallmentDate(installmentDate);
-//            installment.setPaymentDate(null); // ainda não pago
-//            installment.setReceiptPath(null); // se desejar preencher depois
-//            installment.setReceiptUrl(null);
-//            installment.setInstallmentNumber(installmentNumber);
-//
-//            installments.add(installment);
-//
-//            remaining = remaining.subtract(currentAmount);
-//            installmentDate = installmentDate.plusMonths(1);
-//            installmentNumber++;
-//        }
-//
-//        // Aqui você persiste as parcelas no banco
-//        installmentRepository.saveAll(installments);
-//
-//        return "Parcelamento gerado com sucesso: " + installments.size() + " parcelas";
-//    }
-
 
     @Override
     public Page<InstallmentResponse> list(
             Long id,
             BigDecimal amount,
-            LocalDateTime paymentDate,
+            LocalDate paymentDate,
+            LocalDate invoiceDate,
+            String status,
             Integer installmentNumber,
             int page,
             int size,
@@ -170,19 +146,52 @@ public class InstallmentServiceImpl implements InstallmentService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortOrder), sortField));
         Specification<Installment> specification = Specification.where(null);
 
-        if (id != null)
-            specification = specification.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), id));
-        if (amount != null)
-            specification = specification.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("amount"), amount));
-        if (paymentDate != null)
-            specification = specification.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("paymentDate"), paymentDate));
-        if (installmentNumber != null)
-            specification = specification.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("installmentNumber"), installmentNumber));
+        System.out.println("ID______________________________: " + id);
+        System.out.println("VALOR___________________________: " + amount);
+        System.out.println("DATA DE PAGAMENTO_______________: " + paymentDate);
+        System.out.println("DATA DE DOCUMENTO_______________: " + invoiceDate);
+        System.out.println("STATUS__________________________: " + status);
+        System.out.println("Nº______________________________: " + installmentNumber);
+
+        if (invoiceDate != null) {specification = specification.and(
+                (root, query, cb) -> cb.equal(root.get("invoiceDate"), invoiceDate)
+        );}
+
+        // Trata o status fora da lambda
+        if (status != null && !status.isBlank()) {
+            try {
+                PaymentStatus statusEnum = PaymentStatus.valueOf(status);
+                specification = specification.and((root, query, cb) ->
+                        cb.equal(root.get("status"), statusEnum));
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Status inválido: " + status);
+            }
+        }
+
+        if (id != null) {
+            specification = specification.and((root, query, cb) ->
+                    cb.equal(root.get("id"), id));
+        }
+
+        if (amount != null) {
+            specification = specification.and((root, query, cb) ->
+                    cb.equal(root.get("amount"), amount));
+        }
+
+        if (paymentDate != null) {
+            specification = specification.and((root, query, cb) ->
+                    cb.equal(root.get("paymentDate"), paymentDate));
+        }
+
+        if (installmentNumber != null) {
+            specification = specification.and((root, query, cb) ->
+                    cb.equal(root.get("installmentNumber"), installmentNumber));
+        }
 
         Page<Installment> installments = installmentRepository.findAll(specification, pageable);
-
         return installments.map(mapper::toInstallmentResponse);
     }
+
 
     private void buildUpdate(InstallmentRequest request, Installment installment) {
         if (request.getAmount() != null) {
@@ -199,6 +208,12 @@ public class InstallmentServiceImpl implements InstallmentService {
         }
         if (request.getReceiptUrl() != null) {
             installment.setReceiptUrl(request.getReceiptUrl());
+        }
+        if ( request.getStatus() != null) {
+            installment.setStatus(request.getStatus());
+        }
+        if(request.getPaymentTime() != null) {
+            installment.setPaymentTime(request.getPaymentTime());
         }
     }
 

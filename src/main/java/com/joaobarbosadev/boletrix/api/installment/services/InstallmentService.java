@@ -19,7 +19,9 @@ public interface InstallmentService {
     Page<InstallmentResponse> list(
             Long id,
             BigDecimal amount,
-            LocalDateTime paymentDate,
+            LocalDate paymentDate,
+            LocalDate invoiceDate,
+            String status,
             Integer installmentNumber,
             int page,
             int size,

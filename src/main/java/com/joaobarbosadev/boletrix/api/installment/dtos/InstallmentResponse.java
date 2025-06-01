@@ -10,7 +10,8 @@ public class InstallmentResponse {
     private Long id;
     private BigDecimal amount;
     private LocalDate installmentDate;
-    private LocalDateTime paymentDate;
+    private LocalDate paymentDate;
+    private String paymentTime;
     private String receiptUrl;
     private String receiptPath;
     private Integer installmentNumber;
@@ -22,11 +23,12 @@ public class InstallmentResponse {
             Long id,
             BigDecimal amount,
             LocalDate installmentDate,
-            LocalDateTime paymentDate,
+            LocalDate paymentDate,
             String receiptUrl,
             String receiptPath,
             Integer installmentNumber,
-            PaymentStatus status
+            PaymentStatus status,
+            String paymentTime
     ) {
         this.id = id;
         this.amount = amount;
@@ -36,6 +38,7 @@ public class InstallmentResponse {
         this.receiptPath = receiptPath;
         this.installmentNumber = installmentNumber;
         this.status = status;
+        this.paymentTime = paymentTime;
 
     }
 
@@ -71,16 +74,24 @@ public class InstallmentResponse {
         this.receiptUrl = receiptUrl;
     }
 
-    public LocalDateTime getPaymentDate() {
+    public LocalDate getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(LocalDateTime paymentDate) {
+    public void setPaymentDate(LocalDate paymentDate) {
         this.paymentDate = paymentDate;
     }
 
     public LocalDate getInstallmentDate() {
         return installmentDate;
+    }
+
+    public String getPaymentTime() {
+        return paymentTime;
+    }
+
+    public void setPaymentTime(String paymentTime) {
+        this.paymentTime = paymentTime;
     }
 
     public void setInstallmentDate(LocalDate installmentDate) {

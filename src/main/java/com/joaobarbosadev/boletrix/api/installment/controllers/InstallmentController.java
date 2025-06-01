@@ -26,14 +26,16 @@ public class InstallmentController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<InstallmentResponse> createInstallment(InstallmentInsert installmentInsert) {
+    public ResponseEntity<InstallmentResponse> createInstallment(@RequestBody InstallmentInsert installmentInsert) {
         InstallmentResponse response = service.insert(installmentInsert);
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<InstallmentResponse> updateInstallment(@PathVariable Long id, InstallmentRequest request) {
+    public ResponseEntity<InstallmentResponse> updateInstallment(@PathVariable Long id, @RequestBody InstallmentRequest request) {
+
+        System.out.println("API REQUEST: " + request);
         InstallmentResponse response = service.update(request, id);
         return ResponseEntity.ok(response);
     }
@@ -66,7 +68,9 @@ public class InstallmentController {
     public ResponseEntity<Page<InstallmentResponse>> getAllInstallments(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) BigDecimal amount,
-            @RequestParam(required = false) LocalDateTime paymentDate,
+            @RequestParam(required = false) LocalDate paymentDate,
+            @RequestParam(required = false) LocalDate invoiceDate,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) Integer installmentNumber,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -74,8 +78,7 @@ public class InstallmentController {
             @RequestParam(defaultValue = "asc") String sortOrder
     ) {
         Page<InstallmentResponse> installments = service.list(
-                id,
-                amount, paymentDate, installmentNumber, page, size, sortField, sortOrder
+                id, amount, paymentDate, invoiceDate, status, installmentNumber, page, size, sortField, sortOrder
         );
         return ResponseEntity.ok(installments);
 
