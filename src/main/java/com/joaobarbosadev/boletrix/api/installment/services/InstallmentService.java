@@ -3,11 +3,11 @@ package com.joaobarbosadev.boletrix.api.installment.services;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentInsert;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentRequest;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentResponse;
+import com.joaobarbosadev.boletrix.core.models.domain.Debt;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public interface InstallmentService {
 
@@ -15,7 +15,7 @@ public interface InstallmentService {
     InstallmentResponse update(InstallmentRequest request, Long id);
     void deleteById(Long id);
     void deleteAll();
-    String generateInstallment(BigDecimal amount, BigDecimal monthlyAmount, LocalDate initialDate);
+    void generateInstallment(BigDecimal amount, BigDecimal monthlyAmount, LocalDate initialDate, Debt debt);
     Page<InstallmentResponse> list(
             Long id,
             BigDecimal amount,

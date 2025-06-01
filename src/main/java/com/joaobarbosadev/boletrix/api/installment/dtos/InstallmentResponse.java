@@ -1,5 +1,6 @@
 package com.joaobarbosadev.boletrix.api.installment.dtos;
 import com.joaobarbosadev.boletrix.core.enums.PaymentStatus;
+import com.joaobarbosadev.boletrix.core.models.domain.Installment;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,6 +40,19 @@ public class InstallmentResponse {
         this.installmentNumber = installmentNumber;
         this.status = status;
         this.paymentTime = paymentTime;
+
+    }
+
+    public InstallmentResponse(Installment installment) {
+        id = installment.getId();
+        amount = installment.getAmount();
+        installmentDate = installment.getInstallmentDate();
+        paymentDate = installment.getPaymentDate();
+        paymentTime = installment.getPaymentTime();
+        receiptUrl = installment.getReceiptUrl();
+        receiptPath = installment.getReceiptPath();
+        installmentNumber = installment.getInstallmentNumber();
+        status = installment.getStatus();
 
     }
 

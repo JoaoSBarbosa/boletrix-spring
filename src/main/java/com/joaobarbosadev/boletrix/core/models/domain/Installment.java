@@ -36,11 +36,19 @@ public class Installment extends Auditable {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
+    @Column(name = "divida_id")
+    private long debtId;
+
+    @ManyToOne
+    @JoinColumn(name = "divida_id", insertable = false, updatable = false)
+    private Debt debt;
+
     public Installment() {
     }
 
     public Installment(
             Long id,
+            Debt debt,
             BigDecimal amount,
             LocalDate paymentDate,
             LocalDate installmentDate,
@@ -48,7 +56,8 @@ public class Installment extends Auditable {
             String receiptPath,
             Integer installmentNumber,
             PaymentStatus status,
-            String paymentTime
+            String paymentTime,
+            Long debtId
     ) {
         this.id = id;
         this.amount = amount;
@@ -59,6 +68,24 @@ public class Installment extends Auditable {
         this.installmentNumber = installmentNumber;
         this.status = status;
         this.paymentTime = paymentTime;
+        this.debt = debt;
+        this.debtId = debtId;
+    }
+
+    public long getDebtId() {
+        return debtId;
+    }
+
+    public void setDebtId(long debtId) {
+        this.debtId = debtId;
+    }
+
+    public Debt getDebt() {
+        return debt;
+    }
+
+    public void setDebt(Debt debt) {
+        this.debt = debt;
     }
 
     public Long getId() {

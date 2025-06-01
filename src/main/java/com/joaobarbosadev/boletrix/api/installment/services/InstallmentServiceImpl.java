@@ -1,10 +1,12 @@
 package com.joaobarbosadev.boletrix.api.installment.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joaobarbosadev.boletrix.api.debt.services.DebtCommonService;
 import com.joaobarbosadev.boletrix.core.enums.PaymentStatus;
+import com.joaobarbosadev.boletrix.core.models.domain.Debt;
 import com.joaobarbosadev.boletrix.core.models.domain.Installment;
 import com.joaobarbosadev.boletrix.core.exception.customizations.CustomEmptyFieldException;
 import com.joaobarbosadev.boletrix.core.exception.customizations.CustomEntityNotFoundException;
+import com.joaobarbosadev.boletrix.core.repository.DebtRepository;
 import com.joaobarbosadev.boletrix.core.repository.InstallmentRepository;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentInsert;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentRequest;
@@ -20,10 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.joaobarbosadev.boletrix.api.installment.common.InstallmentValidations.validateInsert;
 
@@ -32,10 +32,14 @@ public class InstallmentServiceImpl implements InstallmentService {
 
     private final InstallmentRepository installmentRepository;
     private final InstallmentMapper mapper;
+    private final DebtRepository debtRepository;
+    private final DebtCommonService debtCommonService;
 
-    public InstallmentServiceImpl(InstallmentRepository installmentRepository, InstallmentMapper mapper) {
+    public InstallmentServiceImpl(InstallmentRepository installmentRepository, InstallmentMapper mapper, DebtRepository debtRepository, DebtCommonService debtCommonService) {
         this.installmentRepository = installmentRepository;
         this.mapper = mapper;
+        this.debtRepository = debtRepository;
+        this.debtCommonService = debtCommonService;
     }
 
     @Override
@@ -87,46 +91,40 @@ public class InstallmentServiceImpl implements InstallmentService {
     }
 
     @Override
-    public String generateInstallment(BigDecimal totalAmount, BigDecimal monthlyAmount, LocalDate initialDate) {
-        List<Installment> installments = new ArrayList<>();
-        BigDecimal remaining = totalAmount;
-        int installmentNumber = 1;
-        LocalDate installmentDate = initialDate;
+    public void generateInstallment(BigDecimal totalAmount, BigDecimal monthlyAmount, LocalDate initialDate, Debt debt) {
 
-        System.out.println("GERANDO PARCELAS");
-        System.out.println("Total: " + totalAmount);
-        System.out.println("Valor Mensal: " + monthlyAmount);
+        try {
+            List<Installment> installments = new ArrayList<>();
+            BigDecimal remaining = totalAmount;
+            int installmentNumber = 1;
+            LocalDate installmentDate = initialDate;
+            System.out.println("GERANDO PARCELAS");
+            System.out.println("Total: " + totalAmount);
+            System.out.println("Valor Mensal: " + monthlyAmount);
 
-        while (remaining.compareTo(BigDecimal.ZERO) > 0) {
-            BigDecimal currentAmount;
-
-            if (remaining.compareTo(monthlyAmount) > 0) {
-                currentAmount = monthlyAmount;
-            } else {
-                currentAmount = remaining;
+            while (remaining.compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal currentAmount = remaining.compareTo(monthlyAmount) > 0 ? monthlyAmount : remaining;
+                System.out.println("Parcela " + installmentNumber + ": " + currentAmount);
+                Installment installment = new Installment();
+                installment.setAmount(currentAmount);
+                installment.setInstallmentDate(installmentDate);;
+                installment.setStatus(PaymentStatus.PENDING);
+                installment.setInstallmentNumber(installmentNumber);
+                installment.setDebtId(debt.getId());
+                installment.setReceiptUrl(null);
+                installment.setReceiptPath(null);
+                installments.add(installment);
+                remaining = remaining.subtract(currentAmount);
+                installmentDate = installmentDate.plusMonths(1);
+                installmentNumber++;
             }
-
-            System.out.println("Parcela " + installmentNumber + ": " + currentAmount);
-
-            Installment installment = new Installment();
-            installment.setAmount(currentAmount);
-            installment.setInstallmentDate(installmentDate);
-            installment.setPaymentDate(null);
-            installment.setReceiptPath(null);
-            installment.setReceiptUrl(null);
-            installment.setStatus(PaymentStatus.PENDING);
-            installment.setInstallmentNumber(installmentNumber);
-
-            installments.add(installment);
-
-            remaining = remaining.subtract(currentAmount);
-            installmentDate = installmentDate.plusMonths(1);
-            installmentNumber++;
+            debtRepository.save(debt);
+            installmentRepository.saveAll(installments);
+        }catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
 
-        installmentRepository.saveAll(installments);
-
-        return "Parcelamento gerado com sucesso: " + installments.size() + " parcelas";
+//        return "Parcelamento gerado com sucesso: " + installments.size() + " parcelas";
     }
 
 
@@ -209,11 +207,25 @@ public class InstallmentServiceImpl implements InstallmentService {
         if (request.getReceiptUrl() != null) {
             installment.setReceiptUrl(request.getReceiptUrl());
         }
-        if ( request.getStatus() != null) {
-            installment.setStatus(request.getStatus());
-        }
+//        if ( request.getStatus() != null) {
+//            installment.setStatus(request.getStatus());
+//        }
+
+//        if (request.getStatus() == PaymentStatus.PAID && installment.getStatus() != PaymentStatus.PAID) {
+//            installment.setStatus(PaymentStatus.PAID);
+//            installment.setPaymentDate(LocalDate.now());
+//
+//            Debt debt = installment.getDebt();
+//            BigDecimal newTotalPaid = debt.getTotalPaid().add(installment.getAmount());
+//            debt.setTotalPaid(newTotalPaid);
+//            debt.setRemainingAmount(debt.getTotalAmount().subtract(newTotalPaid));
+//        }
+
         if(request.getPaymentTime() != null) {
             installment.setPaymentTime(request.getPaymentTime());
+        }
+        if (request.getStatus() != null && request.getStatus() != installment.getStatus()) {
+            handleStatusChange(installment, request.getStatus());
         }
     }
 
@@ -224,6 +236,33 @@ public class InstallmentServiceImpl implements InstallmentService {
             entity.setInstallmentNumber(source.getInstallmentNumber());
         }
     }
+
+    private void handleStatusChange(Installment installment, PaymentStatus newStatus) {
+        PaymentStatus oldStatus = installment.getStatus();
+        Debt debt = debtCommonService.getDebt(installment.getDebtId());
+        BigDecimal amount = installment.getAmount();
+
+        installment.setStatus(newStatus);
+
+        if (newStatus == PaymentStatus.PAID && oldStatus != PaymentStatus.PAID) {
+            // Só altera valores da dívida se estiver marcando como pago agora
+            if (installment.getPaymentDate() == null) {
+                installment.setPaymentDate(LocalDate.now());
+            }
+
+            BigDecimal newTotalPaid = debt.getTotalPaid().add(amount);
+            debt.setTotalPaid(newTotalPaid);
+            debt.setRemainingAmount(debt.getTotalAmount().subtract(newTotalPaid));
+
+        } else if (oldStatus == PaymentStatus.PAID && newStatus != PaymentStatus.PAID) {
+            // Se estava como pago e foi revertido para outro status → desfaz
+            BigDecimal newTotalPaid = debt.getTotalPaid().subtract(amount);
+            debt.setTotalPaid(newTotalPaid);
+            debt.setRemainingAmount(debt.getTotalAmount().subtract(newTotalPaid));
+        }
+        debtCommonService.saveDebt(debt);
+    }
+
 
     private void checkId(Long id) {
         if (id == null) {

@@ -1,5 +1,6 @@
 package com.joaobarbosadev.boletrix.api.installment.controllers;
 
+import com.joaobarbosadev.boletrix.api.debt.dtos.DebitInitialRequest;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentInsert;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentRequest;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentResponse;
@@ -47,6 +48,7 @@ public class InstallmentController {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/all")
     public ResponseEntity<Void> deleteAllInstallments() {
@@ -54,15 +56,22 @@ public class InstallmentController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/generated/{totalAmount}/{monthlyAmount}")
-    public ResponseEntity<String> generateInstallment(
-            @PathVariable BigDecimal totalAmount,
-            @PathVariable BigDecimal monthlyAmount,
-            @RequestParam LocalDate initialDate
-    ) {
-        return ResponseEntity.ok(service.generateInstallment(totalAmount, monthlyAmount, initialDate));
-    }
+    //    @PreAuthorize("hasRole('ADMIN')")
+//    @PostMapping("/generated/{totalAmount}/{monthlyAmount}")
+//    public ResponseEntity<String> generateInstallment(
+//            @PathVariable BigDecimal totalAmount,
+//            @PathVariable BigDecimal monthlyAmount,
+//            @RequestParam LocalDate initialDate
+//    ) {
+//        return ResponseEntity.ok(service.generateInstallment(totalAmount, monthlyAmount, initialDate));
+//    }
+
+
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @PostMapping("/generated/{totalAmount}/{monthlyAmount}")
+//    public ResponseEntity<String> generateInstallment(@RequestBody DebitInitialRequest request) {
+//        return ResponseEntity.ok(service.generateInstallment(request));
+//    }
 
     @GetMapping
     public ResponseEntity<Page<InstallmentResponse>> getAllInstallments(
