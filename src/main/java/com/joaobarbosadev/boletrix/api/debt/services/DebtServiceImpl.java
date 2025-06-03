@@ -7,12 +7,14 @@ import com.joaobarbosadev.boletrix.api.debt.mappers.DebtMapper;
 import com.joaobarbosadev.boletrix.api.installment.services.InstallmentService;
 import com.joaobarbosadev.boletrix.core.models.domain.Debt;
 import com.joaobarbosadev.boletrix.core.repository.DebtRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DebtServiceImpl implements DebtService {
@@ -48,6 +50,12 @@ public class DebtServiceImpl implements DebtService {
         return debtMapper.toDTO(debtCommonService.getDebt(id));
     }
 
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DebtDTO> findAll() {
+        return debtRepository.findAll().stream().map(debtMapper::toDTO).collect(Collectors.toList());
+    }
     @Override
     public Page<DebtResponse> list(Long id, BigDecimal amount, LocalDate paymentDate, LocalDate invoiceDate, String status, Integer installmentNumber, int page, int size, String sortField, String sortOrder) {
         return null;

@@ -4,6 +4,7 @@ import com.joaobarbosadev.boletrix.api.debt.dtos.DebitInitialRequest;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentInsert;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentRequest;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentResponse;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentStatus;
 import com.joaobarbosadev.boletrix.api.installment.services.InstallmentService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,16 @@ public class InstallmentController {
 
         System.out.println("API REQUEST: " + request);
         InstallmentResponse response = service.update(request, id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<InstallmentResponse> updateInstallmentStatus(
+            @PathVariable Long id,
+            @RequestBody InstallmentStatus request
+    ) {
+        InstallmentResponse response = service.updateStatus(request, id);
         return ResponseEntity.ok(response);
     }
 

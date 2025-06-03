@@ -1,6 +1,7 @@
 package com.joaobarbosadev.boletrix.api.installment.services;
 
 import com.joaobarbosadev.boletrix.api.debt.services.DebtCommonService;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentStatus;
 import com.joaobarbosadev.boletrix.core.enums.PaymentStatus;
 import com.joaobarbosadev.boletrix.core.models.domain.Debt;
 import com.joaobarbosadev.boletrix.core.models.domain.Installment;
@@ -54,17 +55,22 @@ public class InstallmentServiceImpl implements InstallmentService {
     @Override
     public InstallmentResponse update(InstallmentRequest request, Long id) {
 
-
-        if (id == null) {
-            throw new CustomEmptyFieldException("O ID é obrigatorio para edição de registro");
-        }
-
-        Installment actual = installmentRepository.findById(id).orElseThrow(() -> new CustomEntityNotFoundException("Não foi encontrado um registro com o ID: " + id));
+        checkId(id);
+        Installment actual = getInstallmentById(id);
         buildUpdate(request, actual);
 
 
         System.out.println("DADO REGISTRADO: " + actual);
 
+        actual = installmentRepository.save(actual);
+        return mapper.toInstallmentResponse(actual);
+    }
+
+    @Override
+    public InstallmentResponse updateStatus(InstallmentStatus request, Long id) {
+        checkId(id);
+        Installment actual = getInstallmentById(id);
+        buildUpdateStatus(request, actual);
         actual = installmentRepository.save(actual);
         return mapper.toInstallmentResponse(actual);
     }
@@ -198,6 +204,9 @@ public class InstallmentServiceImpl implements InstallmentService {
         if (request.getPaymentDate() != null) {
             installment.setPaymentDate(request.getPaymentDate());
         }
+        if(request.getPaymentTime() != null) {
+            installment.setPaymentTime(request.getPaymentTime());
+        }
         if (request.getInstallmentNumber() != null) {
             installment.setInstallmentNumber(request.getInstallmentNumber());
         }
@@ -207,20 +216,14 @@ public class InstallmentServiceImpl implements InstallmentService {
         if (request.getReceiptUrl() != null) {
             installment.setReceiptUrl(request.getReceiptUrl());
         }
-//        if ( request.getStatus() != null) {
-//            installment.setStatus(request.getStatus());
-//        }
 
-//        if (request.getStatus() == PaymentStatus.PAID && installment.getStatus() != PaymentStatus.PAID) {
-//            installment.setStatus(PaymentStatus.PAID);
-//            installment.setPaymentDate(LocalDate.now());
-//
-//            Debt debt = installment.getDebt();
-//            BigDecimal newTotalPaid = debt.getTotalPaid().add(installment.getAmount());
-//            debt.setTotalPaid(newTotalPaid);
-//            debt.setRemainingAmount(debt.getTotalAmount().subtract(newTotalPaid));
-//        }
 
+    }
+
+    private void buildUpdateStatus(InstallmentStatus request, Installment installment) {
+        if (request.getPaymentDate() != null) {
+            installment.setPaymentDate(request.getPaymentDate());
+        }
         if(request.getPaymentTime() != null) {
             installment.setPaymentTime(request.getPaymentTime());
         }
@@ -264,6 +267,9 @@ public class InstallmentServiceImpl implements InstallmentService {
     }
 
 
+    private Installment getInstallmentById(Long id) {
+        return installmentRepository.findById(id).orElseThrow(() -> new CustomEntityNotFoundException("Não foi encontrado um registro com o ID: " + id));
+    }
     private void checkId(Long id) {
         if (id == null) {
             throw new CustomEmptyFieldException("O ID obrigatorio para ser efetuado a exclusão do registro");
