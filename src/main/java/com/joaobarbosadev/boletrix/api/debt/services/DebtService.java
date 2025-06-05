@@ -14,6 +14,8 @@ public interface DebtService {
 
     public String generateDebt(DebitInitialRequest request);
 
+    void deleteDebt(Long id);
+    void deleteAllDebts();
     List<DebtDTO> findAll();
     DebtDTO findById(Long id);
     Page<DebtResponse> list(

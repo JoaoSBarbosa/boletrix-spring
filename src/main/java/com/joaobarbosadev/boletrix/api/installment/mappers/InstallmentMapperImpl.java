@@ -1,5 +1,6 @@
 package com.joaobarbosadev.boletrix.api.installment.mappers;
 
+import com.joaobarbosadev.boletrix.api.debt.dtos.DebtDTO;
 import com.joaobarbosadev.boletrix.core.models.domain.Installment;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentRequest;
 import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentResponse;
@@ -43,6 +44,7 @@ public class InstallmentMapperImpl implements InstallmentMapper {
         response.setReceiptPath(installment.getReceiptPath());
         response.setInstallmentNumber(installment.getInstallmentNumber());
         response.setStatus(installment.getStatus());
+        response.setDebtDTO( new DebtDTO( installment.getDebt()) );
         return response;
     }
 

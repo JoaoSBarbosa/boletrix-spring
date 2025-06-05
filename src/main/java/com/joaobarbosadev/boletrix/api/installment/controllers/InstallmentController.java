@@ -1,20 +1,22 @@
 package com.joaobarbosadev.boletrix.api.installment.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joaobarbosadev.boletrix.api.debt.dtos.DebitInitialRequest;
-import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentInsert;
-import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentRequest;
-import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentResponse;
-import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentStatus;
+import com.joaobarbosadev.boletrix.api.installment.dtos.*;
+import com.joaobarbosadev.boletrix.api.installment.helper.InstallmentHelpers;
 import com.joaobarbosadev.boletrix.api.installment.services.InstallmentService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.joaobarbosadev.boletrix.core.utils.Util.converter;
 
 @RestController
 @RequestMapping("/installments")
@@ -22,7 +24,7 @@ public class InstallmentController {
 
     private final InstallmentService service;
 
-    public InstallmentController(InstallmentService service) {
+    public InstallmentController(InstallmentService service ) {
         this.service = service;
     }
 
@@ -35,22 +37,42 @@ public class InstallmentController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<InstallmentResponse> updateInstallment(@PathVariable Long id, @RequestBody InstallmentRequest request) {
+    public ResponseEntity<InstallmentResponse> updateInstallment(
+            @PathVariable Long id,
+            @RequestBody InstallmentRequest request
+
+    ) {
 
         System.out.println("API REQUEST: " + request);
         InstallmentResponse response = service.update(request, id);
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{id}/status")
+//    @PatchMapping("/{id}/status")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @PatchMapping(value = "/{id}/status", consumes = {"multipart/form-data"})
+//    public ResponseEntity<InstallmentResponse> updateInstallmentStatus(
+//            @PathVariable Long id,
+//            @RequestPart("data") InstallmentStatus request,
+//            @RequestPart(value = "file", required = false) MultipartFile file
+//    ) {
+//        InstallmentResponse response = service.updateStatus(request, id, file);
+//        return ResponseEntity.ok(response);
+//    }
+
+    @PatchMapping(value = "/{id}/status", consumes = {"multipart/form-data"})
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<InstallmentResponse> updateInstallmentStatus(
             @PathVariable Long id,
-            @RequestBody InstallmentStatus request
+            @RequestParam("data") String request,
+            @RequestParam(value = "file", required = false) MultipartFile file
     ) {
-        InstallmentResponse response = service.updateStatus(request, id);
+        // converte DTO -> domínio
+        InstallmentResponse response = service.updateStatus(converter(request), id, file);
         return ResponseEntity.ok(response);
     }
+
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
@@ -61,28 +83,28 @@ public class InstallmentController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/all")
-    public ResponseEntity<Void> deleteAllInstallments() {
-        service.deleteAll();
+    @DeleteMapping("/all/{debtId}")
+    public ResponseEntity<Void> deleteAllInstallments(@PathVariable Long debtId) {
+        System.out.println("CHEGOU NA API PARA DELETAR");
+        service.deleteAll(debtId);
         return ResponseEntity.noContent().build();
     }
 
-    //    @PreAuthorize("hasRole('ADMIN')")
-//    @PostMapping("/generated/{totalAmount}/{monthlyAmount}")
-//    public ResponseEntity<String> generateInstallment(
-//            @PathVariable BigDecimal totalAmount,
-//            @PathVariable BigDecimal monthlyAmount,
-//            @RequestParam LocalDate initialDate
-//    ) {
-//        return ResponseEntity.ok(service.generateInstallment(totalAmount, monthlyAmount, initialDate));
-//    }
+    @PostMapping("/{id}/file")
+    public ResponseEntity<InstallmentResponse> uploadFile(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file
+    ) {
+        InstallmentResponse response = service.uploadReceipt(file,id);
+        return ResponseEntity.ok(response);
 
+    }
 
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @PostMapping("/generated/{totalAmount}/{monthlyAmount}")
-//    public ResponseEntity<String> generateInstallment(@RequestBody DebitInitialRequest request) {
-//        return ResponseEntity.ok(service.generateInstallment(request));
-//    }
+    @DeleteMapping("/file/{id}/delete")
+    public ResponseEntity<InstallmentResponse> deleteFile(@PathVariable Long id) {
+        InstallmentResponse response = service.deleteInstallmentReceipt(id);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping
     public ResponseEntity<Page<InstallmentResponse>> getAllInstallments(

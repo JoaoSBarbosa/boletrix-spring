@@ -5,8 +5,11 @@ import com.joaobarbosadev.boletrix.api.debt.dtos.DebtDTO;
 import com.joaobarbosadev.boletrix.api.debt.dtos.DebtResponse;
 import com.joaobarbosadev.boletrix.api.debt.mappers.DebtMapper;
 import com.joaobarbosadev.boletrix.api.installment.services.InstallmentService;
+import com.joaobarbosadev.boletrix.core.exception.customizations.CustomEmptyFieldException;
+import com.joaobarbosadev.boletrix.core.exception.customizations.CustomEntityNotFoundException;
 import com.joaobarbosadev.boletrix.core.models.domain.Debt;
 import com.joaobarbosadev.boletrix.core.repository.DebtRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +49,22 @@ public class DebtServiceImpl implements DebtService {
     }
 
     @Override
+    public void deleteDebt(Long id) {
+        if (id == null) throw new CustomEmptyFieldException("O ID deve ser informado!");
+        try {
+            Debt debt = debtRepository.getReferenceById(id);
+            debtRepository.delete(debt);
+        } catch (EntityNotFoundException e) {
+            throw new CustomEntityNotFoundException("Não foi encontrado registro de debito com o ID: " + id);
+        }
+    }
+
+    @Override
+    public void deleteAllDebts() {
+        debtRepository.deleteAll();
+    }
+
+    @Override
     public DebtDTO findById(Long id) {
         return debtMapper.toDTO(debtCommonService.getDebt(id));
     }
@@ -56,6 +75,7 @@ public class DebtServiceImpl implements DebtService {
     public List<DebtDTO> findAll() {
         return debtRepository.findAll().stream().map(debtMapper::toDTO).collect(Collectors.toList());
     }
+
     @Override
     public Page<DebtResponse> list(Long id, BigDecimal amount, LocalDate paymentDate, LocalDate invoiceDate, String status, Integer installmentNumber, int page, int size, String sortField, String sortOrder) {
         return null;

@@ -1,5 +1,7 @@
 package com.joaobarbosadev.boletrix.api.installment.dtos;
+import com.joaobarbosadev.boletrix.api.debt.dtos.DebtDTO;
 import com.joaobarbosadev.boletrix.core.enums.PaymentStatus;
+import com.joaobarbosadev.boletrix.core.models.domain.Debt;
 import com.joaobarbosadev.boletrix.core.models.domain.Installment;
 
 import java.math.BigDecimal;
@@ -17,6 +19,7 @@ public class InstallmentResponse {
     private String receiptPath;
     private Integer installmentNumber;
     private PaymentStatus status;
+    private DebtDTO debtDTO;
 
     public InstallmentResponse() {}
 
@@ -29,7 +32,8 @@ public class InstallmentResponse {
             String receiptPath,
             Integer installmentNumber,
             PaymentStatus status,
-            String paymentTime
+            String paymentTime,
+            DebtDTO debtDTO
     ) {
         this.id = id;
         this.amount = amount;
@@ -40,6 +44,7 @@ public class InstallmentResponse {
         this.installmentNumber = installmentNumber;
         this.status = status;
         this.paymentTime = paymentTime;
+        this.debtDTO = debtDTO;
 
     }
 
@@ -54,6 +59,18 @@ public class InstallmentResponse {
         installmentNumber = installment.getInstallmentNumber();
         status = installment.getStatus();
 
+    }
+    public InstallmentResponse(Installment installment, Debt debt) {
+        this();
+        debtDTO = new DebtDTO(debt);
+    }
+
+        public DebtDTO getDebtDTO() {
+        return debtDTO;
+    }
+
+    public void setDebtDTO(DebtDTO debtDTO) {
+        this.debtDTO = debtDTO;
     }
 
     public Long getId() {

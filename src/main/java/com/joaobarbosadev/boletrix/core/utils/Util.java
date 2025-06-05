@@ -1,5 +1,10 @@
 package com.joaobarbosadev.boletrix.core.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentStatus;
+import com.joaobarbosadev.boletrix.api.installment.dtos.InstallmentStatusRequest;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -29,9 +34,28 @@ public abstract class Util {
             return "Data inválida";
         }
     }
-
+    public static String getDateTime() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return simpleDateFormat.format(new Date());
+    }
+    public static LocalDateTime getLocalDateTime() {
+        return LocalDateTime.now();
+    }
+    public static LocalDateTime expiresDateTime() {
+        return LocalDateTime.now().plusHours(3);
+    }
 
     public static Instant getInstant() {
         return Instant.now();
+    }
+
+    public static InstallmentStatus converter(String jsonString) {
+       try {
+           ObjectMapper objectMapper = new ObjectMapper();
+           objectMapper.registerModule(new JavaTimeModule());
+           return objectMapper.readValue(jsonString, InstallmentStatus.class);
+       }catch (Exception e) {
+           throw new IllegalArgumentException("Erro ao processar a conversão de string para entidade");
+       }
     }
 }
