@@ -2,12 +2,15 @@ package com.joaobarbosadev.boletrix.api.user.controllers;
 
 import com.joaobarbosadev.boletrix.api.auth.dto.LoginResponse;
 import com.joaobarbosadev.boletrix.api.user.dtos.RegisterRequest;
+import com.joaobarbosadev.boletrix.api.user.dtos.RegisterSystemRequest;
+import com.joaobarbosadev.boletrix.api.user.dtos.UserRequest;
+import com.joaobarbosadev.boletrix.api.user.dtos.UserResponse;
 import com.joaobarbosadev.boletrix.api.user.services.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -20,10 +23,40 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<LoginResponse> register(
+    public ResponseEntity<LoginResponse> registerAndLogin(
             @RequestBody RegisterRequest registerRequest
     ) {
         LoginResponse response = userService.registerAndLogin(registerRequest);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/system_register")
+    public ResponseEntity<UserResponse> register(
+            @RequestBody RegisterSystemRequest registerRequest
+    ) {
+        UserResponse response = userService.register(registerRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponse> updateUser(@RequestBody UserRequest userRequest, @PathVariable Long id) {
+        return ResponseEntity.ok(userService.editUser(userRequest, id));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUserById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 }

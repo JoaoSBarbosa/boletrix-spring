@@ -73,7 +73,7 @@ public class AccessTokenRequestFilter extends OncePerRequestFilter {
         var token = "";
         var email = "";
         var authentizationHeader = request.getHeader(AUTHORIZATION_HEADER);
-        System.out.println("Authorization header: " + authentizationHeader);
+//        System.out.println("Authorization header: " + authentizationHeader);
         if (isIsPresentToken(authentizationHeader)) {
             token = authentizationHeader.substring(TOKEN_TYPE.length());
             email = tokenService.getSubjectFromAccessToken(token);
@@ -90,7 +90,7 @@ public class AccessTokenRequestFilter extends OncePerRequestFilter {
     private void setAuthentication(HttpServletRequest request, String email) {
         var userDetails = userDetailsService.loadUserByUsername(email);
         var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        System.out.println("🚨 Authorities carregadas: " + userDetails.getAuthorities());
+//        System.out.println("🚨 Authorities carregadas: " + userDetails.getAuthorities());
 
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
