@@ -25,6 +25,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
+
+        System.out.println("Login Request: " + loginRequest);
         var userNamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
         var authentication = authenticationManager.authenticate(userNamePasswordAuthenticationToken);
 

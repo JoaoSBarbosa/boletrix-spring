@@ -73,4 +73,14 @@ public class UserSystem {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "Usuário do Sistema: \n" +
+                " • ID:" + id +
+                ", • NAME:" + name + "\n" +
+                " • E-mail: " + email + "\n" +
+                " • Senha " + password + "\n" +
+                " • Acessos: " + roles +"\n";
+    }
 }

@@ -1,13 +1,12 @@
 package com.joaobarbosadev.boletrix.api.user.controllers;
 
 import com.joaobarbosadev.boletrix.api.auth.dto.LoginResponse;
-import com.joaobarbosadev.boletrix.api.user.dtos.RegisterRequest;
-import com.joaobarbosadev.boletrix.api.user.dtos.RegisterSystemRequest;
-import com.joaobarbosadev.boletrix.api.user.dtos.UserRequest;
-import com.joaobarbosadev.boletrix.api.user.dtos.UserResponse;
+import com.joaobarbosadev.boletrix.api.user.dtos.*;
 import com.joaobarbosadev.boletrix.api.user.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,4 +58,36 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
+
+
+    @PutMapping("/teste")
+    public ResponseEntity<String> test() {
+        System.out.println("TESTE REALIZADO");
+        return ResponseEntity.ok("OK");
+    }
+
+    @PutMapping("/profile/{id}")
+    public ResponseEntity<LoginResponse> updateProfile(
+            @RequestBody UserUpdate userUpdate,
+            @PathVariable Long id) {
+
+        System.out.println("CHEGOU NA API: "+ userUpdate);
+
+        LoginResponse response = userService.updateProfile(userUpdate, id);
+        return ResponseEntity.ok(response);
+
+    }
+
+    @PutMapping("/profile/teste/{id}")
+    public ResponseEntity<String> updateProfileTeste(
+            @RequestBody UserUpdate userUpdate,
+            @PathVariable Long id) {
+
+        System.out.println("CHEGOU NA API COM: "+ userUpdate);
+
+        return ResponseEntity.ok("FUNCIOU");
+
+    }
+
+
 }

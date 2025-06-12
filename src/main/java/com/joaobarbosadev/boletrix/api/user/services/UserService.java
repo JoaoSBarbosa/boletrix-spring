@@ -2,10 +2,7 @@ package com.joaobarbosadev.boletrix.api.user.services;
 
 import com.joaobarbosadev.boletrix.api.auth.dto.LoginRequest;
 import com.joaobarbosadev.boletrix.api.auth.dto.LoginResponse;
-import com.joaobarbosadev.boletrix.api.user.dtos.RegisterRequest;
-import com.joaobarbosadev.boletrix.api.user.dtos.RegisterSystemRequest;
-import com.joaobarbosadev.boletrix.api.user.dtos.UserRequest;
-import com.joaobarbosadev.boletrix.api.user.dtos.UserResponse;
+import com.joaobarbosadev.boletrix.api.user.dtos.*;
 
 import java.util.List;
 
@@ -17,5 +14,6 @@ public interface UserService {
     UserResponse editUser(UserRequest request, Long id);
     void deleteUserById(Long id);
 
+    LoginResponse updateProfile(UserUpdate userUpdate, Long id);
     UserResponse register(RegisterSystemRequest registerRequest);
 }

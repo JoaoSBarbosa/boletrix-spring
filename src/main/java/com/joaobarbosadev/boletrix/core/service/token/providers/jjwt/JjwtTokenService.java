@@ -94,6 +94,7 @@ public class JjwtTokenService implements TokenService {
         UserSystem user = userSystem.getUserSystem();
         claims.put("name", user.getName());
         claims.put("email", user.getEmail());
+        claims.put("id", user.getId());
         claims.put("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
         return claims;
     }

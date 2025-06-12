@@ -53,4 +53,11 @@ public class LoginRequest {
     public int hashCode() {
         return Objects.hashCode(email);
     }
+
+    @Override
+    public String toString() {
+        return "📄 LOGIN:\n" +
+                "  • E-mail: " + email + "\n" +
+                "  • Senha: " + password + "\n";
+    }
 }

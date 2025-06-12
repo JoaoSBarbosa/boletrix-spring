@@ -3,10 +3,7 @@ package com.joaobarbosadev.boletrix.api.user.services;
 import com.joaobarbosadev.boletrix.api.auth.dto.LoginRequest;
 import com.joaobarbosadev.boletrix.api.auth.dto.LoginResponse;
 import com.joaobarbosadev.boletrix.api.auth.services.AuthService;
-import com.joaobarbosadev.boletrix.api.user.dtos.RegisterRequest;
-import com.joaobarbosadev.boletrix.api.user.dtos.RegisterSystemRequest;
-import com.joaobarbosadev.boletrix.api.user.dtos.UserRequest;
-import com.joaobarbosadev.boletrix.api.user.dtos.UserResponse;
+import com.joaobarbosadev.boletrix.api.user.dtos.*;
 import com.joaobarbosadev.boletrix.core.exception.customizations.CustomEmptyFieldException;
 import com.joaobarbosadev.boletrix.core.exception.customizations.CustomEntityNotFoundException;
 import com.joaobarbosadev.boletrix.core.models.domain.Role;
@@ -14,6 +11,8 @@ import com.joaobarbosadev.boletrix.core.models.domain.UserSystem;
 import com.joaobarbosadev.boletrix.core.repository.RoleRepository;
 import com.joaobarbosadev.boletrix.core.repository.UserSystemRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse registerAndLogin(RegisterRequest registerRequest) {
         checkValues(registerRequest);
-        String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
+        String encodedPassword = encoderPassword(registerRequest.getPassword());
         UserSystem userSystem = new UserSystem();
         buildUserSystem(registerRequest, userSystem, encodedPassword);
         userSystem = userSystemRepository.save(userSystem);
@@ -96,15 +95,86 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public LoginResponse updateProfile(UserUpdate userUpdate, Long id) {
+        System.out.println("ID da rota: " + id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Usuário autenticado: " + auth.getName());
+        System.out.println("Usuário: " + auth.getPrincipal());
+
+        checkId(id);
+
+
+        String newPasswordString = userUpdate.getPassword();
+
+        UserSystem userSystem = getUser(id);
+        // Atualização de senha
+        if (userUpdate.isAlterPassword()){
+            validateCurrentPassword(userUpdate.getPassword(), userSystem.getPassword());
+            validateNewPasswordFields(userUpdate);
+            String newPassword = encoderPassword(userUpdate.getNewPassword());
+            userSystem.setPassword(newPassword);
+        }
+
+
+        // Atualização de nome
+        if (userUpdate.getName() != null && !userUpdate.getName().isBlank()) {
+            userSystem.setName(userUpdate.getName());
+        }
+        // Atualização de e-mail
+        if (userUpdate.getEmail() != null && !userUpdate.getEmail().isBlank()) {
+            userSystem.setEmail(userUpdate.getEmail());
+        }
+
+
+        userSystem = userSystemRepository.save(userSystem);
+        System.out.println("USER: " + userSystem);
+//
+        LoginRequest loginRequest = new LoginRequest(userSystem.getEmail(), newPasswordString);
+        return userAuthService.login(loginRequest);
+
+//        return null;
+
+    }
+    @Override
     public UserResponse register(RegisterSystemRequest registerRequest) {
         checkValues2(registerRequest);
-        String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
+        String encodedPassword = encoderPassword(registerRequest.getPassword());
         UserSystem userSystem = new UserSystem();
         buildUserSystem2(registerRequest, userSystem, encodedPassword);
         userSystem = userSystemRepository.save(userSystem);
         return new UserResponse(userSystem, userSystem.getRoles());
     }
 
+
+
+
+
+    private void validateCurrentPassword(String providedPassword, String currentEncodedPassword) {
+        if (providedPassword == null || providedPassword.isBlank()) {
+            throw new CustomEmptyFieldException("O campo 'Senha Atual' é obrigatório.");
+        }
+
+        if (!passwordEncoder.matches(providedPassword, currentEncodedPassword)) {
+            throw new IllegalArgumentException("A senha atual está incorreta.");
+        }
+    }
+    private void validateNewPasswordFields(UserUpdate userUpdate) {
+        if (userUpdate.getNewPassword() == null || userUpdate.getNewPassword().isBlank()) {
+            throw new CustomEmptyFieldException("O campo 'Nova Senha' é obrigatório.");
+        }
+        if (userUpdate.getConfirmNewPassword() == null || userUpdate.getConfirmNewPassword().isBlank()) {
+            throw new CustomEmptyFieldException("O campo 'Confirmação de Nova Senha' é obrigatório.");
+        }
+        if (!userUpdate.getNewPassword().equals(userUpdate.getConfirmNewPassword())) {
+            throw new IllegalArgumentException("A nova senha e a confirmação de nova senha não coincidem.");
+        }
+    }
+    private String encoderPassword(String password) {
+        if (password == null) {
+            throw new CustomEmptyFieldException("Erro ao tenatr codigicar senha: -> Valor esta nulo ou vazio");
+        }
+        return passwordEncoder.encode(password);
+    }
     private void checkingFields(UserRequest userRequest) {
 
         if ( userRequest.getEmail() == null || userRequest.getEmail().isEmpty()) {
@@ -160,6 +230,11 @@ public class UserServiceImpl implements UserService {
         validatePasswords2(registerRequest);
     }
 
+    private void  checkId(Long id) {
+        if (id == null) {
+            throw new CustomEmptyFieldException("ID est<UNK> nulo");
+        }
+    }
     private void validatePasswords2(RegisterSystemRequest registerRequest) {
         String password = registerRequest.getPassword();
         String confirm = registerRequest.getConfirmationPassword();
