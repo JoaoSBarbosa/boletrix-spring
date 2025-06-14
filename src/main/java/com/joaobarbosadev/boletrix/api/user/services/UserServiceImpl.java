@@ -104,17 +104,20 @@ public class UserServiceImpl implements UserService {
         checkId(id);
 
 
-        String newPasswordString = userUpdate.getPassword();
 
         UserSystem userSystem = getUser(id);
         // Atualização de senha
         if (userUpdate.isAlterPassword()){
+            System.out.println("SIM, É PARA ATUALIZAR A SENHA: " + userUpdate.isAlterPassword());
             validateCurrentPassword(userUpdate.getPassword(), userSystem.getPassword());
             validateNewPasswordFields(userUpdate);
             String newPassword = encoderPassword(userUpdate.getNewPassword());
+            System.out.println("Nova senha: " + userUpdate.getNewPassword());
+            System.out.println("Nova senha criptografada: " + newPassword);
             userSystem.setPassword(newPassword);
         }
 
+        String newPasswordString = userUpdate.getNewPassword();
 
         // Atualização de nome
         if (userUpdate.getName() != null && !userUpdate.getName().isBlank()) {
@@ -154,6 +157,7 @@ public class UserServiceImpl implements UserService {
             throw new CustomEmptyFieldException("O campo 'Senha Atual' é obrigatório.");
         }
 
+        // VERIFICA SE A SENHA INSERIDO E A SENHA NO USUARIO SÃO AS MESMAS
         if (!passwordEncoder.matches(providedPassword, currentEncodedPassword)) {
             throw new IllegalArgumentException("A senha atual está incorreta.");
         }

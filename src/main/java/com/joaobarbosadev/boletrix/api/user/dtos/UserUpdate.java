@@ -3,7 +3,7 @@ package com.joaobarbosadev.boletrix.api.user.dtos;
 public class UserUpdate {
     private String name;
     private String email;
-    private boolean isAlterPassword;
+    private boolean alterPassword;
     private String password;
     private String newPassword;
     private String confirmNewPassword;
@@ -17,13 +17,13 @@ public class UserUpdate {
                       String password,
                       String newPassword,
                       String confirmNewPassword,
-                      boolean isAlterPassword,
+                      boolean alterPassword,
                       String email) {
         this.name = name;
         this.password = password;
         this.confirmNewPassword = confirmNewPassword;
         this.newPassword = newPassword;
-        this.isAlterPassword = isAlterPassword;
+        this.alterPassword = alterPassword;
         this.email = email;
     }
 
@@ -52,7 +52,7 @@ public class UserUpdate {
     }
 
     public boolean isAlterPassword() {
-        return isAlterPassword;
+        return alterPassword;
     }
 
     public String getConfirmNewPassword() {
@@ -64,7 +64,7 @@ public class UserUpdate {
     }
 
     public void setAlterPassword(boolean alterPassword) {
-        isAlterPassword = alterPassword;
+        this.alterPassword = alterPassword;
     }
 
     public String getEmail() {
@@ -81,7 +81,7 @@ public class UserUpdate {
         return "📄 Detalhes:\n" +
                 "  • Nome: " + name + "\n" +
                 "  • E-mail: " + email + "\n" +
-                "  • Alterar Senha?: '" + isAlterPassword + "'\n" +
+                "  • Alterar Senha?: '" + alterPassword + "'\n" +
                 "  • Nova Senha: '" + newPassword + "'\n" +
                 "  • Confirmação Nova Senha: '" + confirmNewPassword + "'\n" +
                 "  • Senha atual: " + password + "\n";
