@@ -14,6 +14,6 @@ public interface UserService {
     UserResponse editUser(UserRequest request, Long id);
     void deleteUserById(Long id);
 
-    LoginResponse updateProfile(UserUpdate userUpdate, Long id);
+    UserResponse updateProfile(UserUpdate userUpdate, Long id);
     UserResponse register(RegisterSystemRequest registerRequest);
 }

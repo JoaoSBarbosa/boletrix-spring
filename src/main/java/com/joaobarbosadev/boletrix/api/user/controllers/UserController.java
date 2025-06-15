@@ -67,13 +67,13 @@ public class UserController {
     }
 
     @PutMapping("/profile/{id}")
-    public ResponseEntity<LoginResponse> updateProfile(
+    public ResponseEntity<UserResponse> updateProfile(
             @RequestBody UserUpdate userUpdate,
             @PathVariable Long id) {
 
         System.out.println("CHEGOU NA API: "+ userUpdate);
 
-        LoginResponse response = userService.updateProfile(userUpdate, id);
+        UserResponse response = userService.updateProfile(userUpdate, id);
         return ResponseEntity.ok(response);
 
     }
