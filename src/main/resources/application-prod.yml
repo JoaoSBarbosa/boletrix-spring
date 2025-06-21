@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=UTC
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USER_NAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+com:
+  joaobarbosadev:
+    boletrix:
+      core:
+        service:
+          token:
+            jjwt:
+              accessTokenSigningKey: ${REFRESH_TOKEN}
+              accessTokenExpirationInSeconds: ${ACCESS_TOKEN_EXPIRATION}
+              refreshTokenSigningKey: ${REFRESH_TOKEN_SIGNIN}
+              refreshTokenExpirationInSeconds: ${REFRESH_TOKEN_EXPIRATION}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

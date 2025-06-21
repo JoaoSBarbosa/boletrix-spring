@@ -36,8 +36,7 @@
 *.log
 
 # Configuração sensível
-src/main/resources/application.yml
-src/main/resources/application-*.yml
+src/main/resources/application-dev.yml
 .env
 
 # SO
