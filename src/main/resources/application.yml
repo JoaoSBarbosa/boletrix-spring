@@ -5,7 +5,3 @@ spring:
     active: ${BOLETRIX_PROFILE:prod}
   web:
     locale: pt_BR
-  flyway:
-    enabled: true
-    baseline-description: true
-    locations: classpath:db/migration
