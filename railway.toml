@@ -1,0 +1,3 @@
+[services.web]
+  startCommand = "java -jar target/boletrix-spring.jar"
+  ports = ["8080"]
