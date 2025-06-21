@@ -14,7 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Permite para todos os endpoints
-                        .allowedOrigins("http://localhost:3001", "http://localhost:3000") // mudar para domínio do frontend
+                        .allowedOrigins("http://localhost:3001", "http://localhost:3000","https://boletrix.vercel.app")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true); // se autenticação
